@@ -1,9 +1,12 @@
 package db;
 
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 public class DBConnectionProvider {
 
@@ -11,17 +14,27 @@ public class DBConnectionProvider {
 
     private Connection connection;
 
-    private final String DRIVER_NAME = "com.mysql.jdbc.Driver";
-    private final String DB_URL = "jdbc:mysql://localhost:3306/task_manegement";
-    private final String USERNAME = "root";
-    private final String PASSWORD = "root";
+    private  String dbDriver ;
+    private  String dbUrl;
+    private  String dbUsername ;
+    private  String dbPassword ;
 
     private DBConnectionProvider() {
         try {
-            Class.forName(DRIVER_NAME);
-        } catch (ClassNotFoundException e) {
+            loadProperties();
+            Class.forName(dbDriver);
+        } catch (ClassNotFoundException | IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void loadProperties() throws IOException {
+        Properties properties = new Properties();
+        properties.load(new FileInputStream("C:\\Users\\WPP\\IdeaProjects\\Task-Management\\src\\main\\resources\\DBConfig.properties"));
+        dbUrl = properties.getProperty("db.Url");
+        dbDriver = properties.getProperty("db.Driver");
+        dbUsername = properties.getProperty("db.Username");
+        dbPassword = properties.getProperty("db.Password");
     }
 
     public static DBConnectionProvider getInstance() {
@@ -31,7 +44,7 @@ public class DBConnectionProvider {
     public Connection getConnection() {
         try {
             if (connection == null || connection.isClosed()) {
-                connection = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+                connection = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();

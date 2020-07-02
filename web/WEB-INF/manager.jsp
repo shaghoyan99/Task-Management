@@ -1,10 +1,12 @@
 <%@ page import="java.util.List" %>
 <%@ page import="model.User" %>
-<%@ page import="model.Task" %><%--
+<%@ page import="javax.jws.soap.SOAPBinding" %>
+<%@ page import="model.Task" %>
+<%@ page import="model.Comment" %><%--
   Created by IntelliJ IDEA.
-  User: WPP
-  Date: 26.06.2020
-  Time: 10:25
+  User: Admin
+  Date: 20.06.2020
+  Time: 1:02
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -13,28 +15,27 @@
     <title>Title</title>
 </head>
 <body>
-
-<%List<User> users = (List<User>) request.getAttribute("users"); %>
-<%List<Task> tasks = (List<Task>) request.getAttribute("tasks"); %>
-
 <%
-    User user1 = (User) session.getAttribute("user");
+    List<User> users = (List<User>) request.getAttribute("user");
+    List<Task> tasks = (List<Task>) request.getAttribute("task");
 %>
-Welcome to <%=user1.getName()%> <a href="/logout">logout </a> <br>
 
+<a href="/logout"> logout </a>
 
-<div style="width: 800px">
+<div style="width: 800px;">
     <div style="width: 50%; float: left">
         Add User:<br>
-        <form action="/userRegister" method="post">
+        <form action="/userRegister" method="post" enctype="multipart/form-data">
             <input type="text" name="name" placeholder="name"><br>
             <input type="text" name="surname" placeholder="surname"><br>
             <input type="text" name="email" placeholder="email"><br>
-            <input type="text" name="password" placeholder="password"><br>
+            <input type="password" name="password" placeholder="password"><br>
             <select name="type">
                 <option value="USER">USER</option>
                 <option value="MANAGER">MANAGER</option>
             </select><br>
+            <input type="file" name="image"> <br>
+
             <input type="submit" value="Register">
         </form>
     </div>
@@ -42,7 +43,7 @@ Welcome to <%=user1.getName()%> <a href="/logout">logout </a> <br>
         Add Task:<br>
         <form action="/addTask" method="post">
             <input type="text" name="name" placeholder="name"><br>
-            <textarea name="description" placeholder="description"></textarea><br>
+            <textarea name="description" placeholder="description"> </textarea><br>
             <input type="date" name="date"><br>
             <select name="status">
                 <option value="NEW">NEW</option>
@@ -50,21 +51,22 @@ Welcome to <%=user1.getName()%> <a href="/logout">logout </a> <br>
                 <option value="FINISHED">FINISHED</option>
             </select><br>
             <select name="user_id">
-                <%
-                    for (User user : users) { %>
-                <option value="<%=user.getId()%>"><%=user.getName() %> <%=user.getSurname() %>
-                </option>
 
                 <%
+                    if (users != null) {
+                        for (User user : users) {
+                %>
+                <option value="<%=user.getId()%>"><%=user.getName()%> <%=user.getSurname()%></option>
+
+                <%
+                        }
                     }
                 %>
-            </select><br>
+
+            </select><br><br>
             <input type="submit" value="Add">
         </form>
     </div>
-</div>
-</div>
-
 <div>
     All Users:<br>
     <table border="1">
@@ -72,28 +74,34 @@ Welcome to <%=user1.getName()%> <a href="/logout">logout </a> <br>
             <th>name</th>
             <th>surname</th>
             <th>email</th>
-            <th>status</th>
+            <th>type</th>
+            <th>picture</th>
         </tr>
         <%
-            for (User user : users) { %>
+            if (users != null) {
+                for (User user : users) {%>
         <tr>
-            <td><%=user.getName() %>
+            <td><%=user.getName()%>
             </td>
-            <td><%=user.getSurname() %>
+            <td><%=user.getSurname()%>
             </td>
-            <td><%=user.getEmail() %>
+            <td><%=user.getEmail()%>
             </td>
-            <td><%=user.getUserType().name() %>
+            <td><%=user.getUserType().name()%>
             </td>
+            <td> <% if (user.getPictureUrl() != null) { %>
+                <img src="/image?path=<%=user.getPictureUrl()%>" width="30"/>
+                <%}%>
+            </td>
+            <%
+                }
+                }
+            %>
         </tr>
-
-        <%
-            }
-        %>
     </table>
 </div>
 <div>
-    All Tasks:<br>
+    All Tasks: <br>
     <table border="1">
         <tr>
             <th>name</th>
@@ -103,24 +111,28 @@ Welcome to <%=user1.getName()%> <a href="/logout">logout </a> <br>
             <th>user</th>
         </tr>
         <%
-            for (Task task : tasks) { %>
+            if (tasks != null) { %>
+               <% for (Task task : tasks) { %>
         <tr>
-            <td><%=task.getName() %>
+            <td>  <a href="/taskPage?id=<%=task.getId()%>"> <%=task.getName()%> </a>
             </td>
-            <td><%=task.getDescription() %>
+            <td><%=task.getDescription()%>
             </td>
-            <td><%=task.getDeadline() %>
+            <td><%=task.getDeadline()%>
             </td>
-            <td><%=task.getTaskStatus().name() %>
+            <td><%=task.getTaskStatus().name()%>
             </td>
-            <td><%=task.getUser().getName() + " " + task.getUser().getSurname() %>
+            <td><%=task.getUser().getName() + " " + task.getUser().getSurname()%>
             </td>
-        </tr>
 
-        <%
-            }
-        %>
+            <%
+                    } %>
+               <% }
+            %>
+        </tr>
     </table>
 </div>
+</div>
+
 </body>
 </html>
