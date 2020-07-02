@@ -12,7 +12,6 @@ import java.io.IOException;
 
 @WebFilter(urlPatterns = {"/userHome", "/changeTaskStatus"})
 public class UserAuthFilter implements Filter {
-
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
 
@@ -23,12 +22,12 @@ public class UserAuthFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
-        if (user == null || user.getUserType() != UserType.USER) {
+        if (user == null || user.getUserType() != UserType.USER){
             HttpServletResponse response = (HttpServletResponse) servletResponse;
             response.sendRedirect("/index.jsp");
-        } else {
-            filterChain.doFilter(servletRequest, servletResponse);
-        }
+        }else {
+        filterChain.doFilter(servletRequest, servletResponse);
+    }
     }
 
     @Override

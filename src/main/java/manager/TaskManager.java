@@ -1,145 +1,144 @@
 package manager;
 
-
-
 import db.DBConnectionProvider;
 import model.Task;
 import model.TaskStatus;
+import model.User;
+import model.UserType;
 
-
+import javax.jws.soap.SOAPBinding;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class TaskManager {
 
-    private Connection connection = DBConnectionProvider.getInstance().getConnection();
+    private Connection connection;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private UserManager userManager = new UserManager();
 
-
-    public boolean create(Task task) {
-        String sql = "INSERT INTO task(name,description,deadline,status,user_id) VALUES(?,?,?,?,?)";
-        try {
-            PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            statement.setString(1, task.getName());
-            statement.setString(2,task.getDescription());
-            if (task.getDeadline() != null) {
-                statement.setString(3, sdf.format(task.getDeadline()));
-            } else {
-                statement.setString(3, null);
-            }
-
-            statement.setString(4, task.getTaskStatus().name());
-            statement.setInt(5, task.getUserId());
-            statement.executeUpdate();
-
-            ResultSet generatedKeys = statement.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                task.setId(generatedKeys.getInt(1));
-            }
-            return true;
-        } catch (SQLException e) {
-            return false;
-        }
+    public TaskManager() {
+        connection = DBConnectionProvider.getInstance().getConnection();
     }
 
-    public Task getTaskById(long id) {
-        String sql = "SELECT * FROM task WHERE id=" + id;
-        try {
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
 
+    public void addTask(Task task)  {
+
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = connection.prepareStatement("Insert into task (name,description,deadline,status,user_id) Values(?,?,?,?,?)");
+            preparedStatement.setString(1, task.getName());
+            preparedStatement.setString(2, task.getDescription());
+            preparedStatement.setString(3, sdf.format(task.getDeadline()));
+            preparedStatement.setString(4, task.getTaskStatus().name());
+            preparedStatement.setInt(5, task.getUserId());
+            preparedStatement.executeUpdate();
+
+            ResultSet resultSet = preparedStatement.getGeneratedKeys();
             if (resultSet.next()) {
-                return getTaskFromResultSet(resultSet);
-
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public List<Task> getAllTaskByUserId(int userId) {
-        List<Task> task = new ArrayList<>();
-        String sql = "SELECT * FROM task WHERE user_id = ?";
-        try {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setInt(1, userId);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                task.add(getTaskFromResultSet(resultSet));
-
+                int id = resultSet.getInt(1);
+                task.setId(id);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return task;
+
     }
 
-    public List<Task> getAllTask() {
-        List<Task> tasks = new ArrayList<>();
-        String sql = "SELECT * FROM task ";
-        try {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                tasks.add(getTaskFromResultSet(resultSet));
 
-            }
+    public List<Task> getAllTasks()  {
+        Statement statement = null;
+        List<Task> tasks = new LinkedList<>();
+        try {
+            statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM task");
+            tasks = getTasksFromResultSet(resultSet);
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return tasks;
     }
 
-    private Task getTaskFromResultSet(ResultSet resultSet) {
+    public List<Task> getAllTasksByUserId(int userId) {
+        PreparedStatement statement = null;
+        List<Task> tasks = new LinkedList<>();
         try {
-            try {
-                return Task.builder()
-                        .id(resultSet.getInt(1))
-                        .name(resultSet.getString(2))
-                        .description(resultSet.getString(3))
-                        .deadline(resultSet.getString(4) == null ? null : sdf.parse(resultSet.getString(4)))
-                        .taskStatus(TaskStatus.valueOf(resultSet.getString(5)))
-                        .userId(resultSet.getInt(6))
-                        .user(userManager.getById(resultSet.getInt(6)))
-                        .build();
-            } catch (ParseException e) {
-                e.printStackTrace();
-                return null;
-            }
+            statement = connection.prepareStatement("SELECT * FROM task WHERE user_id =?");
+            statement.setInt(1, userId);
+            ResultSet resultSet = statement.executeQuery();
+            tasks = getTasksFromResultSet(resultSet);
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
         }
+
+        return tasks;
     }
 
-    public void update(int taskId, String status) {
+    private List<Task> getTasksFromResultSet(ResultSet resultSet) throws SQLException {
+        List<Task> tasks = new LinkedList<>();
+        while (resultSet.next()) {
+            Task task = new Task();
+            task.setId(resultSet.getInt("id"));
+            task.setName(resultSet.getString("name"));
+            task.setDescription(resultSet.getString("description"));
+            try {
+                task.setDeadline(sdf.parse(resultSet.getString("deadline")));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            task.setTaskStatus(TaskStatus.valueOf(resultSet.getString("status")));
+            task.setUserId(resultSet.getInt("user_id"));
+            task.setUser(userManager.getUserById(task.getUserId()));
+
+            tasks.add(task);
+        }
+        return tasks;
+    }
+
+    public void updateTaskStatus(int taskId, String newStatus){
+        PreparedStatement preparedStatement = null;
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE task SET status = ? WHERE id = ?");
-            preparedStatement.setString(1, status);
-            preparedStatement.setInt(2, taskId);
+            preparedStatement = connection.prepareStatement("UPDATE task set status = ? where id = ?");
+            preparedStatement.setString(1,newStatus);
+            preparedStatement.setInt(2,taskId);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
     }
-
-    public boolean delete(int id) {
-        String sql = "DELETE FROM task WHERE  id = " + id;
+    public Task getTaskById(int id) {
+        PreparedStatement preparedStatement = null;
         try {
-            Statement statement = connection.createStatement();
-            statement.executeUpdate(sql);
-            return true;
+            preparedStatement = connection.prepareStatement("SELECT * FROM task WHERE id=?");
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                Task task = new Task();
+                task.setId(resultSet.getInt("id"));
+                task.setName(resultSet.getString("name"));
+                task.setDescription(resultSet.getString("description"));
+                try {
+                    task.setDeadline(sdf.parse(resultSet.getString("deadline")));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                task.setTaskStatus(TaskStatus.valueOf(resultSet.getString("status")));
+                task.setUserId(resultSet.getInt("user_id"));
+                task.setUser(userManager.getUserById(task.getUserId()));
+                return task;
 
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
+
+
+        return null;
     }
+
+
 }

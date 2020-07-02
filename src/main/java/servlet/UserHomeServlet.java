@@ -15,16 +15,19 @@ import java.io.IOException;
 import java.util.List;
 
 @WebServlet(urlPatterns = "/userHome")
+
 public class UserHomeServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
-        User user = (User) session.getAttribute("user");
-        TaskManager taskManager = new TaskManager();
-        List<Task> allTaskByUserId = taskManager.getAllTaskByUserId(user.getId());
-        req.setAttribute("tasks", allTaskByUserId);
-        req.getRequestDispatcher("/WEB-INF/user.jsp").forward(req,resp);
+            User user = (User) session.getAttribute("user");
 
-    }
+            TaskManager taskManager = new TaskManager();
+            List<Task> allTasksByUserId = taskManager.getAllTasksByUserId(user.getId());
+            req.setAttribute("tasks",allTasksByUserId);
+            req.getRequestDispatcher("/user.jsp").forward(req,resp);
+
+        }
+
 }

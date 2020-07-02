@@ -20,8 +20,6 @@ public class AddTaskServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-
         String name = req.getParameter("name");
         String description = req.getParameter("description");
         String date = req.getParameter("date");
@@ -29,8 +27,9 @@ public class AddTaskServlet extends HttpServlet {
         int userId = Integer.parseInt(req.getParameter("user_id"));
 
         TaskManager taskManager = new TaskManager();
+
         try {
-            taskManager.create(Task.builder()
+            taskManager.addTask(Task.builder()
                     .name(name)
                     .description(description)
                     .deadline(sdf.parse(date))

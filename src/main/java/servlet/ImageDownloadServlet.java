@@ -10,7 +10,7 @@ import java.io.*;
 @WebServlet(urlPatterns = "/image")
 public class ImageDownloadServlet extends HttpServlet {
 
-    private final String UPLOAD_DIR = "D:\\web\\ServletJspExample\\upload";
+    private final String UPLOAD_DIR = "C:\\Users\\WPP\\IdeaProjects\\Task-Management\\src\\main\\resources\\upload";
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

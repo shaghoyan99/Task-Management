@@ -1,100 +1,66 @@
 package manager;
 
-
 import db.DBConnectionProvider;
 import model.User;
 import model.UserType;
 
+import javax.jws.soap.SOAPBinding;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class UserManager {
 
-    private Connection connection = DBConnectionProvider.getInstance().getConnection();
+    private Connection connection;
 
-    public boolean register(User user) {
-        String sql = "INSERT INTO user(name,surname,email,password,type) VALUES(?,?,?,?,?)";
-        try {
-            PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            statement.setString(1, user.getName());
-            statement.setString(2, user.getSurname());
-            statement.setString(3, user.getEmail());
-            statement.setString(4, user.getPassword());
-            statement.setString(5,user.getUserType().name());
-            statement.executeUpdate();
-
-            ResultSet generatedKeys = statement.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                user.setId(generatedKeys.getInt(1));
-            }
-            return true;
-        } catch (SQLException e) {
-            return false;
-        }
+    public UserManager() {
+        connection = DBConnectionProvider.getInstance().getConnection();
     }
 
-    public User getById(long id) {
-        String sql = "SELECT * FROM user WHERE id=" + id;
+
+    public void addUser(User user) {
+
+        PreparedStatement preparedStatement = null;
         try {
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
+            preparedStatement = connection.prepareStatement("Insert into user (name,surname,email,password,type,picture_url) Values(?,?,?,?,?,?)");
+            preparedStatement.setString(1, user.getName());
+            preparedStatement.setString(2, user.getSurname());
+            preparedStatement.setString(3, user.getEmail());
+            preparedStatement.setString(4, user.getPassword());
+            preparedStatement.setString(5, user.getUserType().name());
+            preparedStatement.setString(6,user.getPictureUrl());
+            preparedStatement.executeUpdate();
 
+            ResultSet resultSet = preparedStatement.getGeneratedKeys();
             if (resultSet.next()) {
-                return getUserFromResultSet(resultSet);
-
+                int id = resultSet.getInt(1);
+                user.setId(id);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+
     }
 
-    public User getByEmailAndPassword(String email, String password) {
-        String sql = "SELECT * FROM user WHERE email= ? AND password = ?";
-        try {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, email);
-            statement.setString(2, password);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return getUserFromResultSet(resultSet);
-
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public User getByEmail(String email) {
-        String sql = "SELECT * FROM user WHERE email= ?";
-        try {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, email);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return getUserFromResultSet(resultSet);
-
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     public List<User> getAllUser() {
-        List<User> users = new ArrayList<User>();
-        String sql = "SELECT * FROM user";
+        Statement statement = null;
+        List<User> users = new LinkedList<>();
         try {
-            PreparedStatement statement = connection.prepareStatement(sql);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                users.add(getUserFromResultSet(resultSet));
+            statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM user");
 
+            while (resultSet.next()) {
+                User user = new User();
+                user.setId(resultSet.getInt("id"));
+                user.setName(resultSet.getString("name"));
+                user.setSurname(resultSet.getString("surname"));
+                user.setEmail(resultSet.getString("email"));
+                user.setPassword(resultSet.getString("password"));
+                user.setUserType(UserType.valueOf(resultSet.getString("type")));
+                user.setPictureUrl(resultSet.getString("picture_url"));
+                users.add(user);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -102,21 +68,61 @@ public class UserManager {
         return users;
     }
 
-    private User getUserFromResultSet(ResultSet resultSet) {
+    public User getUserByEmailAndPassword(String email, String password) {
         try {
-            return User.builder()
-                    .id(resultSet.getInt(1))
-                    .name(resultSet.getString(2))
-                    .surname(resultSet.getString(3))
-                    .email(resultSet.getString(4))
-                    .password(resultSet.getString(5))
-                    .userType(UserType.valueOf(resultSet.getString(6)))
-                    .build();
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM user WHERE email= ? AND password = ?");
+            preparedStatement.setString(1, email);
+            preparedStatement.setString(2, password);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                User user = new User();
+                user.setId(resultSet.getInt("id"));
+                user.setName(resultSet.getString("name"));
+                user.setSurname(resultSet.getString("surname"));
+                user.setEmail(resultSet.getString("email"));
+                user.setPassword(resultSet.getString("password"));
+                user.setUserType(UserType.valueOf(resultSet.getString("type")));
+                user.setPictureUrl(resultSet.getString("picture_url"));
+                return user;
 
+            }
         } catch (SQLException e) {
-            return null;
+            e.printStackTrace();
         }
 
+
+        return null;
     }
 
+    public User getUserById(int id) {
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = connection.prepareStatement("SELECT * FROM user WHERE id=?");
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                User user = new User();
+                user.setId(resultSet.getInt("id"));
+                user.setName(resultSet.getString("name"));
+                user.setSurname(resultSet.getString("surname"));
+                user.setEmail(resultSet.getString("email"));
+                user.setPassword(resultSet.getString("password"));
+                user.setUserType(UserType.valueOf(resultSet.getString("type")));
+                user.setPictureUrl(resultSet.getString("picture_url"));
+                return user;
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+        return null;
+    }
+
+    public void deleteUserById(int id) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM user WHERE id =?");
+        preparedStatement.setInt(1, id);
+        preparedStatement.executeUpdate();
+    }
 }
