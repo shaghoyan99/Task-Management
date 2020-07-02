@@ -46,7 +46,7 @@ public class TaskManager {
         }
     }
 
-    public Task getById(long id) {
+    public Task getTaskById(long id) {
         String sql = "SELECT * FROM task WHERE id=" + id;
         try {
             Statement statement = connection.createStatement();
