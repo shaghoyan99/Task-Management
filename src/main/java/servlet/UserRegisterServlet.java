@@ -24,7 +24,8 @@ public class UserRegisterServlet extends HttpServlet {
 
     UserManager userManager = new UserManager();
     User user = new User();
-    private final String UPLOAD_DIR = "C:\\Users\\WPP\\IdeaProjects\\Task-Management\\src\\main\\resources\\upload";
+    private final String UPLOAD_DIR = "C:\\Users\\WPP\\IdeaProjects\\Task-Management\\src\\main\\resources\\upload" +
+            "";
 
 
     @Override
@@ -35,22 +36,45 @@ public class UserRegisterServlet extends HttpServlet {
         String password = req.getParameter("password");
         String type = req.getParameter("type");
 
-        User user = User.builder()
-                .name(name)
-                .surname(surname)
-                .email(email)
-                .password(password)
-                .userType(UserType.valueOf(type))
-                .build();
-        for (Part part : req.getParts()) {
-            if (getFileName(part) != null) {
-                String fileName = System.currentTimeMillis() + getFileName(part);
-                String fullFileName = UPLOAD_DIR + File.separator + fileName;
-                part.write(fullFileName);
-                user.setPictureUrl(fileName);
-            }
+        StringBuilder msg = new StringBuilder();
+
+        if (name == null || name.length() == 0) {
+            msg.append("Name field is required <br>");
         }
-        userManager.addUser(user);
+        if (surname == null || surname.length() == 0) {
+            msg.append("Surname field is required <br>");
+        }
+        if (email == null || email.length() == 0) {
+            msg.append("Email field is required <br>");
+        }
+        if (password == null || password.length() == 0) {
+            msg.append("Password field is required <br>");
+        }
+        if (type == null || type.length() == 0) {
+            msg.append("Type field is required <br>");
+        }
+
+        if (msg.toString().equals("")) {
+
+            User user = User.builder()
+                    .name(name)
+                    .surname(surname)
+                    .email(email)
+                    .password(password)
+                    .userType(UserType.valueOf(type))
+                    .build();
+            for (Part part : req.getParts()) {
+                if (getFileName(part) != null) {
+                    String fileName = System.currentTimeMillis() + getFileName(part);
+                    String fullFileName = UPLOAD_DIR + File.separator + fileName;
+                    part.write(fullFileName);
+                    user.setPictureUrl(fileName);
+                }
+            }
+            userManager.addUser(user);
+            msg.append("User was successfully added <br>");
+        }
+        req.getSession().setAttribute("msg", msg.toString());
         resp.sendRedirect("/managerHome");
     }
 

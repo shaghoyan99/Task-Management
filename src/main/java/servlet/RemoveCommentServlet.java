@@ -17,7 +17,7 @@ import java.io.IOException;
 @WebServlet(urlPatterns = "/removeComment")
 public class RemoveCommentServlet extends HttpServlet {
 
-CommentManager commentManager = new CommentManager();
+    CommentManager commentManager = new CommentManager();
 
     @SneakyThrows
     @Override
@@ -25,8 +25,15 @@ CommentManager commentManager = new CommentManager();
         int id = Integer.parseInt(req.getParameter("id"));
         HttpSession session = req.getSession();
         Task task = (Task) session.getAttribute("task");
+
+        StringBuilder msg = new StringBuilder();
+
+        if (msg.toString().equals("")) {
             commentManager.deleteCommentById(id);
-            req.setAttribute("id", id);
-            resp.sendRedirect("/taskPage?id=" + task.getId());
+            msg.append("Comment was deleted <br>");
         }
+        req.getSession().setAttribute("msg", msg.toString());
+        req.setAttribute("id", id);
+        resp.sendRedirect("/taskPage?id=" + task.getId());
+    }
 }

@@ -16,6 +16,18 @@
 </head>
 <body>
 
+<%
+    String msg = "";
+    if (session.getAttribute("msg") != null) {
+        msg = (String) session.getAttribute("msg");
+        session.removeAttribute("msg");
+    }
+%>
+
+<p style="color: red">
+    <%=msg%>
+</p>
+
 <% Task task = (Task) session.getAttribute("task");
     List<Comment> allComments = (List<Comment>) request.getAttribute("allComments");
     User user = (User) session.getAttribute("user");

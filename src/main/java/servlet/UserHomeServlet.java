@@ -21,13 +21,13 @@ public class UserHomeServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
-            User user = (User) session.getAttribute("user");
+        User user = (User) session.getAttribute("user");
 
-            TaskManager taskManager = new TaskManager();
-            List<Task> allTasksByUserId = taskManager.getAllTasksByUserId(user.getId());
-            req.setAttribute("tasks",allTasksByUserId);
-            req.getRequestDispatcher("/user.jsp").forward(req,resp);
+        TaskManager taskManager = new TaskManager();
+        List<Task> allTasksByUserId = taskManager.getAllTasksByUserId(user.getId());
+        req.setAttribute("tasks", allTasksByUserId);
+        req.getRequestDispatcher("/user.jsp").forward(req, resp);
 
-        }
+    }
 
 }

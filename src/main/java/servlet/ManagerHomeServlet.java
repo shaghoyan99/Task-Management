@@ -22,13 +22,13 @@ public class ManagerHomeServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-            TaskManager taskManager = new TaskManager();
-            UserManager userManager = new UserManager();
-            List<Task> allTasks = taskManager.getAllTasks();
-            List<User> allUser = userManager.getAllUser();
-        req.setAttribute("user",allUser);
-        req.setAttribute("task",allTasks);
-            req.getRequestDispatcher("/manager.jsp").forward(req,resp);
-        }
-        }
+        TaskManager taskManager = new TaskManager();
+        UserManager userManager = new UserManager();
+        List<Task> allTasks = taskManager.getAllTasks();
+        List<User> allUser = userManager.getAllUser();
+        req.setAttribute("user", allUser);
+        req.setAttribute("task", allTasks);
+        req.getRequestDispatcher("/manager.jsp").forward(req, resp);
+    }
+}
 

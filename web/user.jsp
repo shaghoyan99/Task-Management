@@ -13,6 +13,20 @@
     <title>Title</title>
 </head>
 <body>
+
+<%
+    String msg = "";
+    if (session.getAttribute("msg") != null) {
+        msg = (String) session.getAttribute("msg");
+        session.removeAttribute("msg");
+    }
+%>
+
+<p style="color: red">
+    <%=msg%>
+</p>
+
+
 <% List<Task> tasks = (List<Task>) request.getAttribute("tasks");
 
     User user = (User) session.getAttribute("user");
@@ -35,10 +49,11 @@ Welcome <%=user.getName()%> <% if (user.getPictureUrl() != null) { %>
             <th>Update Status</th>
         </tr>
         <%
-            if (tasks != null){
-            for (Task task : tasks){ %>
+            if (tasks != null) {
+                for (Task task : tasks) { %>
         <tr>
-            <td>  <a href="/taskPage?id=<%=task.getId()%>"> <%=task.getName()%> </a>
+            <td><a href="/taskPage?id=<%=task.getId()%>"><%=task.getName()%>
+            </a>
             </td>
             <td><%=task.getDescription()%>
             </td>
@@ -59,10 +74,10 @@ Welcome <%=user.getName()%> <% if (user.getPictureUrl() != null) { %>
                 </form>
             </td>
 
-        <%
-            }
-            }
-        %>
+            <%
+                    }
+                }
+            %>
         </tr>
     </table>
 </div>

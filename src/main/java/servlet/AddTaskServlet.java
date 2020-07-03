@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 public class AddTaskServlet extends HttpServlet {
 
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    private TaskManager taskManager = new TaskManager();
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -26,19 +27,35 @@ public class AddTaskServlet extends HttpServlet {
         String status = req.getParameter("status");
         int userId = Integer.parseInt(req.getParameter("user_id"));
 
-        TaskManager taskManager = new TaskManager();
+        StringBuilder msg = new StringBuilder();
 
-        try {
-            taskManager.addTask(Task.builder()
-                    .name(name)
-                    .description(description)
-                    .deadline(sdf.parse(date))
-                    .taskStatus(TaskStatus.valueOf(status))
-                    .userId(userId)
-                    .build());
-            resp.sendRedirect("/managerHome");
-        } catch (ParseException e) {
-            e.printStackTrace();
+        if (name == null || name.length() == 0) {
+            msg.append("Name field is required <br>");
         }
+        if (description == null || description.length() == 0) {
+            msg.append("Description field is required <br>");
+        }
+        if (date == null || date.length() == 0) {
+            msg.append("Date field is required <br>");
+        }
+
+        if (msg.toString().equals("")) {
+
+            try {
+                taskManager.addTask(Task.builder()
+                        .name(name)
+                        .description(description)
+                        .deadline(sdf.parse(date))
+                        .taskStatus(TaskStatus.valueOf(status))
+                        .userId(userId)
+                        .build());
+                msg.append("Task was successfully added <br>");
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        req.getSession().setAttribute("msg", msg.toString());
+        resp.sendRedirect("/managerHome");
     }
 }
