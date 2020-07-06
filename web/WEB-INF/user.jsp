@@ -27,8 +27,8 @@
 </p>
 
 
-<% List<Task> tasks = (List<Task>) request.getAttribute("tasks");
-
+<%
+    List<Task> tasks = (List<Task>) request.getAttribute("tasks");
     User user = (User) session.getAttribute("user");
 %>
 
@@ -51,7 +51,7 @@ Welcome <%=user.getName()%> <% if (user.getPictureUrl() != null) { %>
             if (tasks != null) {
                 for (Task task : tasks) { %>
         <tr>
-            <td><a href="/taskPage?id=<%=task.getId()%>"><%=task.getName()%>
+            <td><a href="/taskPage?taskId=<%=task.getId()%>"><%=task.getName()%>
             </a>
             </td>
             <td><%=task.getDescription()%>
