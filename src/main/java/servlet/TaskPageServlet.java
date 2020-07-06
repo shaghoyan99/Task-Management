@@ -29,6 +29,6 @@ public class TaskPageServlet extends HttpServlet {
         HttpSession session = req.getSession();
         session.setAttribute("task",taskById);
         req.setAttribute("allComments",allCommentsByTaskId);
-        req.getRequestDispatcher("/taskPage.jsp").forward(req,resp);
+        req.getRequestDispatcher("/WEB-INF/taskPage.jsp").forward(req,resp);
     }
 }

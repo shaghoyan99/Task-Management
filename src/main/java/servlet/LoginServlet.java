@@ -39,9 +39,11 @@ public class LoginServlet  extends HttpServlet {
                 HttpSession session = req.getSession();
                 session.setAttribute("user", user);
                 if (user.getUserType() == UserType.MANAGER) {
+                    req.getSession().setAttribute("user",user);
                     resp.sendRedirect("/managerHome");
                     return;
                 } else {
+                    req.getSession().setAttribute("user", user);
                     resp.sendRedirect("/userHome");
                     return;
                 }

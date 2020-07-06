@@ -35,7 +35,7 @@
 <% if (user.getUserType() == UserType.MANAGER) {%>
 <a href="/managerHome">Back</a>
 <% } else {%>
-<a href="/userHome"> Back </a>
+<a href="/userHome">Back</a>
 <%}%>
 
 <div>
@@ -52,6 +52,8 @@
             if (task != null) {
         %>
         <tr>
+            <td><a href="/taskPage?id=<%=task.getId()%>"><%=task.getName()%>
+            </a>
             <td><%=task.getName()%>
             </td>
             <td><%=task.getDescription()%>
@@ -106,6 +108,7 @@
 <div>
     <form action="/addComment" method="post">
         <label>
+            <input type="hidden" name="taskId" value="<%=task.getId()%>">
             <textarea name="comment" placeholder="comment"></textarea>
         </label>
         <input type="submit" name="addComment">

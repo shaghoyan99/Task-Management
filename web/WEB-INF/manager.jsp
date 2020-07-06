@@ -1,18 +1,11 @@
 <%@ page import="java.util.List" %>
 <%@ page import="model.User" %>
-<%@ page import="javax.jws.soap.SOAPBinding" %>
 <%@ page import="model.Task" %>
-<%@ page import="model.Comment" %><%--
-  Created by IntelliJ IDEA.
-  User: Admin
-  Date: 20.06.2020
-  Time: 1:02
-  To change this template use File | Settings | File Templates.
---%>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Title</title>
+    <title>Manager Home</title>
 </head>
 <body>
 
@@ -31,8 +24,11 @@
 <%
     List<User> users = (List<User>) request.getAttribute("user");
     List<Task> tasks = (List<Task>) request.getAttribute("task");
+    User us = (User) session.getAttribute("user");
 %>
 
+Welcome <%=us.getName()%> <% if (us.getPictureUrl() != null) { %>
+<img src="/image?path=<%=us.getPictureUrl()%>" width="50"/> <%}%><br>
 <a href="/logout"> logout </a>
 
 <div style="width: 800px;">

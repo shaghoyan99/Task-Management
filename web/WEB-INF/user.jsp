@@ -10,7 +10,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Title</title>
+    <title>User Page</title>
 </head>
 <body>
 
@@ -33,8 +33,7 @@
 %>
 
 Welcome <%=user.getName()%> <% if (user.getPictureUrl() != null) { %>
-<img src="/image?path=<%=user.getPictureUrl()%>" width="50"/> <%}%>
-
+<img src="/image?path=<%=user.getPictureUrl()%>" width="50"/> <%}%><br>
 <a href="/logout"> logout </a>
 
 <div>

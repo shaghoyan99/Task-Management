@@ -3,6 +3,7 @@ package servlet;
 import manager.TaskManager;
 import model.Task;
 import model.TaskStatus;
+import model.User;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -21,6 +22,7 @@ public class AddTaskServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
         String name = req.getParameter("name");
         String description = req.getParameter("description");
         String date = req.getParameter("date");

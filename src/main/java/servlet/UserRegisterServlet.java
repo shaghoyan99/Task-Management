@@ -24,8 +24,7 @@ public class UserRegisterServlet extends HttpServlet {
 
     UserManager userManager = new UserManager();
     User user = new User();
-    private final String UPLOAD_DIR = "C:\\Users\\WPP\\IdeaProjects\\Task-Management\\src\\main\\resources\\upload" +
-            "";
+    private final String UPLOAD_DIR = "C:\\Users\\WPP\\IdeaProjects\\Task-Management\\upload" + "";
 
 
     @Override

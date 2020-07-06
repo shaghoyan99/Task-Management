@@ -24,7 +24,8 @@ public class AddCommentsServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");
-        Task task = (Task) session.getAttribute("task");
+        int taskId = Integer.parseInt(req.getParameter("taskId"));
+        Task task = taskManager.getTaskById(taskId);
         String comment = req.getParameter("comment");
 
         StringBuilder msg = new StringBuilder();

@@ -19,16 +19,17 @@ import java.util.List;
 
 public class ManagerHomeServlet extends HttpServlet {
 
+    private TaskManager taskManager = new TaskManager();
+    private UserManager userManager = new UserManager();
+
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        TaskManager taskManager = new TaskManager();
-        UserManager userManager = new UserManager();
         List<Task> allTasks = taskManager.getAllTasks();
         List<User> allUser = userManager.getAllUser();
         req.setAttribute("user", allUser);
         req.setAttribute("task", allTasks);
-        req.getRequestDispatcher("/manager.jsp").forward(req, resp);
+        req.getRequestDispatcher("/WEB-INF/manager.jsp").forward(req, resp);
     }
 }
 

@@ -6,12 +6,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.Properties;
 
 @WebServlet(urlPatterns = "/image")
 public class ImageDownloadServlet extends HttpServlet {
 
-    private final String uploadDir = "C:\\Users\\WPP\\IdeaProjects\\Task-Management\\src\\main\\resources\\DBConfig.properties";
+    private final String uploadDir = "C:\\Users\\WPP\\IdeaProjects\\Task-Management\\upload";
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
