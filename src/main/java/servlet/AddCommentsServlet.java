@@ -36,14 +36,15 @@ public class AddCommentsServlet extends HttpServlet {
 
         if (msg.toString().equals("")) {
             Comment comment1 = Comment.builder()
-                    .task_id(task.getId())
-                    .user_id(user.getId())
+                    .taskId(task.getId())
+                    .userId(user.getId())
                     .comment(comment)
                     .build();
             commentManager.addComment(comment1);
             msg.append("Comment was successfully added <br>");
         }
         req.getSession().setAttribute("msg", msg.toString());
-        resp.sendRedirect("/taskPage?id=" + task.getId());
+        req.setAttribute("taskId",task);
+        resp.sendRedirect("/taskPage?taskId=" + taskId);
     }
 }

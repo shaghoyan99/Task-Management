@@ -28,93 +28,42 @@
     <%=msg%>
 </p>
 
-<% Task task = (Task) session.getAttribute("task");
-    List<Comment> allComments = (List<Comment>) request.getAttribute("allComments");
-    User user = (User) session.getAttribute("user");
-%>
-<% if (user.getUserType() == UserType.MANAGER) {%>
-<a href="/managerHome">Back</a>
-<% } else {%>
-<a href="/userHome">Back</a>
-<%}%>
+<%User user = (User) session.getAttribute("user");%>
 
-<div>
-    All Tasks: <br>
-    <table border="1">
-        <tr>
-            <th>name</th>
-            <th>description</th>
-            <th>deadline</th>
-            <th>status</th>
-            <th>user</th>
-        </tr>
-        <%
-            if (task != null) {
-        %>
-        <tr>
-            <td><a href="/taskPage?id=<%=task.getId()%>"><%=task.getName()%>
-            </a>
-            <td><%=task.getName()%>
-            </td>
-            <td><%=task.getDescription()%>
-            </td>
-            <td><%=task.getDeadline()%>
-            </td>
-            <td><%=task.getTaskStatus().name()%>
-            </td>
-            <td><%=task.getUser().getName() + " " + task.getUser().getSurname()%>
-            </td>
-            <%
-                }
-            %>
-        </tr>
-    </table>
-</div>
-<div>
-    All Comments: <br>
-    <table border="1">
-        <tr>
-            <th>comment</th>
-            <th>date</th>
-            <th>user</th>
-            <th>remove</th>
-        </tr>
-        <%
-            if (allComments != null) {
-                for (Comment comment : allComments) { %>
-        <tr>
-            <td><%=comment.getComment()%>
-            </td>
-            <td><%=comment.getDate()%>
-            </td>
-            <td><%=comment.getUser().getName() + " " + comment.getUser().getSurname()%>
-            </td>
-            <td><%
-                if (user.getUserType() == UserType.MANAGER) {%>
-                <a href="/removeComment?id=<%=comment.getId()%>">X</a>
-                <% } else if (comment.getUser_id() == user.getId()) {%>
-                <a href="/removeComment?id=<%=comment.getId()%>">X</a>
-                <% } %>
-            </td>
+<%List<Comment> comments = (List<Comment>) request.getAttribute("allComments");%>
+<%Task task = (Task) request.getAttribute("tasks");%>
 
 
-            <%
-                    }
-                }
-            %>
-        </tr>
-    </table>
-</div>
+Name : <%=task.getName()%><br>
+Status : <%=task.getTaskStatus()%><br>
+Description : <%=task.getDescription()%><br>
+Deadline : <%=task.getDeadline()%><br><br>
+add Comment<br><br>
 <div>
     <form action="/addComment" method="post">
-        <label>
-            <input type="hidden" name="taskId" value="<%=task.getId()%>">
-            <textarea name="comment" placeholder="comment"></textarea>
-        </label>
-        <input type="submit" name="addComment">
+
+        <input type="hidden" name="taskId" value="<%=task.getId()%>">
+        <input type="hidden" name="userId" value="<%=user.getId()%>">
+        <input type=hidden name="userName" value="<%=user.getName()%>">
+
+        <textarea style="width: 250px;height: 150px;" placeholder="Comment" name="comment"></textarea><br><br>
+        <input type="submit" class="button" name="comment">
     </form>
 
 </div>
+<br>
+<%for (Comment comment : comments) {%>
+<div class="user"><%=comment.getUser().getName()%> by :</div>
+<div class="comment"><%=comment.getComment()%>
+</div>
+<div class="date"><%=comment.getDate()%>
+</div>
+<%if ((user.getUserType() == UserType.USER && user.getName().equals(comment.getUser().getName())) || (user.getUserType() == UserType.MANAGER)) {%>
+<a href="/removeComment?commentId=<%=comment.getId()%>&taskId=<%=comment.getTaskId()%>">
+    <button class="button">Remove</button>
+</a>
+<%}%><br><br>
+<%}%>
 
 
 </body>

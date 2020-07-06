@@ -21,19 +21,17 @@ public class RemoveCommentServlet extends HttpServlet {
 
     @SneakyThrows
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        int id = Integer.parseInt(req.getParameter("id"));
-        HttpSession session = req.getSession();
-        Task task = (Task) session.getAttribute("task");
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        int commentId = Integer.parseInt(req.getParameter("commentId"));
+        int taskId = Integer.parseInt(req.getParameter("taskId"));
 
         StringBuilder msg = new StringBuilder();
 
         if (msg.toString().equals("")) {
-            commentManager.deleteCommentById(id);
+            commentManager.deleteCommentById(commentId);
             msg.append("Comment was deleted <br>");
         }
         req.getSession().setAttribute("msg", msg.toString());
-        req.setAttribute("id", id);
-        resp.sendRedirect("/taskPage?id=" + task.getId());
+        resp.sendRedirect("/taskPage?taskId=" + taskId);
     }
 }

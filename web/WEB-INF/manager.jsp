@@ -123,7 +123,7 @@ Welcome <%=us.getName()%> <% if (us.getPictureUrl() != null) { %>
             if (tasks != null) { %>
                <% for (Task task : tasks) { %>
         <tr>
-            <td>  <a href="/taskPage?id=<%=task.getId()%>"> <%=task.getName()%> </a>
+            <td>  <a href="/taskPage?taskId=<%=task.getId()%>"> <%=task.getName()%> </a>
             </td>
             <td><%=task.getDescription()%>
             </td>

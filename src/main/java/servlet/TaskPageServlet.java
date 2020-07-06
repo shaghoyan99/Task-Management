@@ -23,11 +23,10 @@ public class TaskPageServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        int id = Integer.parseInt(req.getParameter("id"));
+        int id = Integer.parseInt(req.getParameter("taskId"));
         Task taskById = taskManager.getTaskById(id);
         List<Comment> allCommentsByTaskId = commentManager.getAllCommentsByTaskId(taskById.getId());
-        HttpSession session = req.getSession();
-        session.setAttribute("task",taskById);
+        req.setAttribute("tasks",taskById);
         req.setAttribute("allComments",allCommentsByTaskId);
         req.getRequestDispatcher("/WEB-INF/taskPage.jsp").forward(req,resp);
     }

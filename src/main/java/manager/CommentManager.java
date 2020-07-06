@@ -2,8 +2,6 @@ package manager;
 
 import db.DBConnectionProvider;
 import model.Comment;
-import model.Task;
-import model.TaskStatus;
 
 import java.sql.*;
 import java.text.ParseException;
@@ -28,8 +26,8 @@ public class CommentManager {
         PreparedStatement preparedStatement = null;
         try {
             preparedStatement = connection.prepareStatement("Insert into comment (task_id,user_id,comment) Values(?,?,?)");
-            preparedStatement.setInt(1, comment.getTask_id());
-            preparedStatement.setInt(2, comment.getUser_id());
+            preparedStatement.setInt(1, comment.getTaskId());
+            preparedStatement.setInt(2, comment.getUserId());
             preparedStatement.setString(3, comment.getComment());
             preparedStatement.executeUpdate();
 
@@ -93,16 +91,16 @@ public class CommentManager {
         while (resultSet.next()) {
             Comment comment = new Comment();
             comment.setId(resultSet.getInt("id"));
-            comment.setTask_id(resultSet.getInt("task_id"));
-            comment.setUser_id(resultSet.getInt("user_id"));
+            comment.setTaskId(resultSet.getInt("task_id"));
+            comment.setUserId(resultSet.getInt("user_id"));
             comment.setComment(resultSet.getString("comment"));
             try {
                 comment.setDate(sdf.parse(resultSet.getString("date")));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            comment.setTask(taskManager.getTaskById(comment.getTask_id()));
-            comment.setUser(userManager.getUserById(comment.getUser_id()));
+            comment.setTask(taskManager.getTaskById(comment.getTaskId()));
+            comment.setUser(userManager.getUserById(comment.getUserId()));
 
             comments.add(comment);
         }

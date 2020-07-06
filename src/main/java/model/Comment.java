@@ -14,8 +14,8 @@ import java.util.Date;
 public class Comment {
 
     private int id;
-    private int task_id;
-    private int user_id;
+    private int taskId;
+    private int userId;
     private String comment;
     private Date date;
     private Task task;
