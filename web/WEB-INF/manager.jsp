@@ -118,6 +118,7 @@ Welcome <%=us.getName()%> <% if (us.getPictureUrl() != null) { %>
             <th>deadline</th>
             <th>status</th>
             <th>user</th>
+            <th>Update Status</th>
         </tr>
         <%
             if (tasks != null) { %>
@@ -133,11 +134,18 @@ Welcome <%=us.getName()%> <% if (us.getPictureUrl() != null) { %>
             </td>
             <td><%=task.getUser().getName() + " " + task.getUser().getSurname()%>
             </td>
-
-            <%
-                    } %>
-               <% }
-            %>
+            <td>
+                <form action="/changeTaskStatus" method="post">
+                    <input type="hidden" name="taskId" value="<%=task.getId()%>">
+                    <select name="status">
+                        <option value="NEW">NEW</option>
+                        <option value="IN_PROGRESS">IN_PROGRESS</option>
+                        <option value="FINISHED">FINISHED</option>
+                    </select> <input type="submit" value="OK">
+                </form>
+            </td>
+            <%} %>
+               <% }%>
         </tr>
     </table>
 </div>

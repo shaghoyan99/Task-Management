@@ -33,12 +33,45 @@
 <%List<Comment> comments = (List<Comment>) request.getAttribute("allComments");%>
 <%Task task = (Task) request.getAttribute("tasks");%>
 
+<% if (user.getUserType() == UserType.MANAGER) {%>
+<a href="/managerHome">Back</a>
+<% } else {%>
+<a href="/userHome"> Back </a>
+<%}%><br>
 
-Name : <%=task.getName()%><br>
-Status : <%=task.getTaskStatus()%><br>
-Description : <%=task.getDescription()%><br>
-Deadline : <%=task.getDeadline()%><br><br>
-add Comment<br><br>
+
+
+<div>
+    All Tasks: <br>
+    <table border="1">
+        <tr>
+            <th>name</th>
+            <th>description</th>
+            <th>deadline</th>
+            <th>status</th>
+            <th>user</th>
+        </tr>
+        <%
+            if (task != null) {
+        %>
+        <tr>
+            <td><%=task.getName()%>
+            </td>
+            <td><%=task.getDescription()%>
+            </td>
+            <td><%=task.getDeadline()%>
+            </td>
+            <td><%=task.getTaskStatus().name()%>
+            </td>
+            <td><%=task.getUser().getName() + " " + task.getUser().getSurname()%>
+            </td>
+            <%
+                }
+            %>
+        </tr>
+    </table>
+</div>
+<br>
 <div>
     <form action="/addComment" method="post">
 
@@ -46,7 +79,7 @@ add Comment<br><br>
         <input type="hidden" name="userId" value="<%=user.getId()%>">
         <input type=hidden name="userName" value="<%=user.getName()%>">
 
-        <textarea style="width: 250px;height: 150px;" placeholder="Comment" name="comment"></textarea><br><br>
+        <textarea style="width: 150px;height: 50px;" placeholder="Comment" name="comment"></textarea><br><br>
         <input type="submit" class="button" name="comment">
     </form>
 
